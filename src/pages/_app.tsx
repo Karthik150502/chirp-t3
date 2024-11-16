@@ -13,14 +13,16 @@ import "@/styles/globals.css";
 import {
   ClerkProvider,
 } from '@clerk/nextjs'
+import { Toaster } from "@/components/ui/sonner";
 
 
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <div className={`${montserrat400.className} min-h-screen overflow-hidden relative`}>
+    <div className={`${montserrat400.className} min-h-screen overflow-hidden relative `}>
       <ClerkProvider>
         <Component {...pageProps} />
+        <Toaster richColors />
       </ClerkProvider>
     </div>
   );

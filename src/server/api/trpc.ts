@@ -6,12 +6,13 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "@/server/db";
+import { getAuth } from "@clerk/nextjs/server";
 
 /**
  * 1. CONTEXT
@@ -33,7 +34,11 @@ type CreateContextOptions = Record<string, never>;
  *
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
+
+// We casn delete this, if we are not doing testing.
 const createInnerTRPCContext = (_opts: CreateContextOptions) => {
+
+
   return {
     db,
   };
@@ -46,7 +51,15 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  * @see https://trpc.io/docs/context
  */
 export const createTRPCContext = (_opts: CreateNextContextOptions) => {
-  return createInnerTRPCContext({});
+
+  const { req } = _opts;
+  const session = getAuth(req);
+  const user = session.userId;
+
+  return {
+    db,
+    user
+  };
 };
 
 /**
@@ -60,6 +73,7 @@ export const createTRPCContext = (_opts: CreateNextContextOptions) => {
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
   errorFormatter({ shape, error }) {
+
     return {
       ...shape,
       data: {
@@ -115,6 +129,22 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
   return result;
 });
 
+
+
+export const userAuthMiddleware = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.user) {
+    return new TRPCError({ code: "UNAUTHORIZED" })
+  }
+
+  return await next({
+    ctx: {
+      currentUser: ctx.user,
+    }
+  })
+})
+
+
+
 /**
  * Public (unauthenticated) procedure
  *
@@ -123,3 +153,4 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * are logged in.
  */
 export const publicProcedure = t.procedure.use(timingMiddleware);
+export const userAuthProcedure = t.procedure.use(userAuthMiddleware);
