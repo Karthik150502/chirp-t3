@@ -6,7 +6,7 @@ import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from "@clerk/n
 import { auth } from "@clerk/nextjs/server";
 
 export default function Home() {
-  const hello = api.post.hello.useQuery({ text: "from tRPC" });
+  const posts = api.post.getAll.useQuery()
 
 
   const user = useUser()
@@ -26,7 +26,15 @@ export default function Home() {
         </SignedIn>
         <div>
           {
-            !!user && <p>{user.user?.fullName}</p>
+            !!user && <p>{user.user?.fullName} | {user.user?.id}</p>
+          }
+
+          {
+            posts.data?.map((post, idx) => {
+              return <div key={post.id} className="text-white">
+                <pre>{JSON.stringify(post, null, 4)}</pre>
+              </div>
+            })
           }
         </div>
       </main>

@@ -20,7 +20,6 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <div className={montserrat400.className}>
       <ClerkProvider>
-
         <Component {...pageProps} />
       </ClerkProvider>
     </div>
