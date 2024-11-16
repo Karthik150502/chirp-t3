@@ -18,7 +18,7 @@ import {
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <div className={montserrat400.className}>
+    <div className={`${montserrat400.className} min-h-screen overflow-hidden relative`}>
       <ClerkProvider>
         <Component {...pageProps} />
       </ClerkProvider>
