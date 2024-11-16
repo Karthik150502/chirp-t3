@@ -14,12 +14,16 @@ import {
   ClerkProvider,
 } from '@clerk/nextjs'
 import { Toaster } from "@/components/ui/sonner";
+import Head from "next/head";
 
 
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <div className={`${montserrat400.className} min-h-screen overflow-hidden relative `}>
+      <Head>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <ClerkProvider>
         <Component {...pageProps} />
         <Toaster richColors />
