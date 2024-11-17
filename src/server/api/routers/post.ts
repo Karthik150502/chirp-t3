@@ -97,7 +97,7 @@ export const attachUserDataToPosts = async (posts: Post[]) => {
   const res = posts.map(p => {
     const author = users.find((u) => u.id === p.authorId)!
     if (!author) {
-      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Authr for the post not found." })
+      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Author for the post not found." })
     }
     return {
       post: p,

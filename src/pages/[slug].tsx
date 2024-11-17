@@ -1,12 +1,7 @@
 
 
 import { api } from "@/utils/api";
-import { SignedIn, SignedOut, SignInButton, } from "@clerk/nextjs";
-import CreatePostWizard from "@/components/createPostWizard";
-// import { Button } from "@/components/ui/button";
-// import { ChevronLeft } from "lucide-react";
 import Head from "next/head";
-import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { createServerSideHelpers } from '@trpc/react-query/server';
 
@@ -17,6 +12,7 @@ import type { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from "next
 import PageLayout from "@/components/layouts/pageLayout";
 import Image from "next/image";
 import ProfilePostsFeed from "@/components/profilePostsFeed";
+import { TRPCError } from "@trpc/server";
 
 export const getStaticPaths: GetStaticPaths = () => {
     return {
@@ -69,11 +65,6 @@ export default function ProfilePage({ username }: { username: string }) {
     });
 
 
-    if (isError) {
-        return <div className="w-full flex py-5">Internal Server Error.</div>
-    }
-
-
 
     return (
         <>
@@ -90,18 +81,31 @@ export default function ProfilePage({ username }: { username: string }) {
                             <p className="text-xs py-6 text-white">Loading....</p>
                         </div>
                     }
+                    {
+                        (isError || (data instanceof TRPCError)) ? <>
+                            <div className="w-full flex py-5">Internal Server Error.</div>
+                        </> : <>
+                            <div className="w-full h-[250px] border-b border-b-white/15 flex flex-col items-center justify-center relative">
+                                <div className="w-full h-[50%] border-b border-b-white/15"></div>
+                                <div className="w-full h-[50%] flex items-end justify-center py-5">
+                                    <p className="text-white">
+                                        <span className="text-semibold">{data?.name}</span> | <span className="text-xs text-slate-400">@{data?.username}</span>
+                                    </p>
+                                </div>
+                                <Image src={data!.profilePicture} height={125} width={125} alt={`${data!.name}`} className="rounded-full absolute" />
+                            </div>
+                            <ProfilePostsFeed userId={data!.id} />
+                        </>
+                    }
+                </div>
+            </PageLayout>
+        </>
+    );
+}
 
-                    <div className="w-full h-[250px] border-b border-b-white/15 flex flex-col items-center justify-center relative">
-                        <div className="w-full h-[50%] border-b border-b-white/15"></div>
-                        <div className="w-full h-[50%] flex items-end justify-center py-5">
-                            <p className="text-white">
-                                <span className="text-semibold">{data?.name}</span> | <span className="text-xs text-slate-400">@{data?.username}</span>
-                            </p>
-                        </div>
-                        <Image src={data.profilePicture} height={125} width={125} alt={`${data.name}`} className="rounded-full absolute" />
-                    </div>
-                    <ProfilePostsFeed userId={data.id} />
-                    {/* <div className="text-white flex flex-col items-center justify-center gap-y-2 py-10">
+
+
+{/* <div className="text-white flex flex-col items-center justify-center gap-y-2 py-10">
                             <p className="text-2xl">404</p>
                             <p className="text-4xl">Page not found.</p>
                             <p className="text-xx">
@@ -116,8 +120,3 @@ export default function ProfilePage({ username }: { username: string }) {
                                 Back to Home
                                 </Button>
                         </div> */}
-                </div>
-            </PageLayout>
-        </>
-    );
-}
