@@ -1,12 +1,10 @@
 
 
 import { api } from "@/utils/api";
-import { SignedIn, SignedOut, SignInButton, } from "@clerk/nextjs";
-import CreatePostWizard from "@/components/createPostWizard";
 import Head from "next/head";
 import PageLayout from "@/components/layouts/pageLayout";
 import { generateSsgHelper } from "@/server/helpers/ssgHelper";
-import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from "next";
+import type { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from "next";
 import PostView from "@/components/postView";
 import { Loader2 } from "lucide-react";
 

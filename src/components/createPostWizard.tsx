@@ -6,7 +6,6 @@ import { Pen } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
-import { ZodError } from 'zod';
 export default function CreatePostWizard() {
 
 
@@ -18,7 +17,7 @@ export default function CreatePostWizard() {
             toast.success("Posted", { id: "create-post" })
             await ctx.post.getAll.invalidate()
         },
-        onError: (error) => {
+        onError: () => {
             // if (error instanceof TRPCClientError) {
             // console.log(error)
             // }

@@ -81,7 +81,17 @@ export const postRouter = createTRPCRouter({
       });
     }),
 
-
+  deleteById: userAuthProcedure.input(z.object({
+    id: z.string()
+  })).mutation(async ({ ctx, input }) => {
+    const res = await ctx.db.post.delete({
+      where: {
+        id: input.id
+      }
+    })
+    return res;
+  })
+  ,
   getPostsByUserid: publicProcedure.input(z.object({
     userId: z.string()
   })).query(async ({ ctx, input }) => {
