@@ -4,38 +4,64 @@ import { api } from "@/utils/api";
 import { SignedIn, SignedOut, SignInButton, } from "@clerk/nextjs";
 import CreatePostWizard from "@/components/createPostWizard";
 import Head from "next/head";
-import { useEffect } from "react";
 import PageLayout from "@/components/layouts/pageLayout";
+import { generateSsgHelper } from "@/server/helpers/ssgHelper";
+import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from "next";
+import PostView from "@/components/postView";
 
 
-export default function SinglePostPage() {
+
+
+export const getStaticPaths: GetStaticPaths = () => {
+  return {
+    paths: [], fallback: "blocking"
+  }
+}
+
+
+
+export const getStaticProps: GetStaticProps = async (context: GetStaticPropsContext) => {
+
+  const ssgHelper = generateSsgHelper();
+
+  const id = context.params?.id;
+  if (!id) {
+    throw new Error("No id found.")
+  }
+
+
+  const postId = id as string;
+
+  await ssgHelper.post.getById.prefetch({
+    postId
+  })
+
+  return {
+    props: {
+      trpcState: ssgHelper.dehydrate(),
+      postId
+    }
+  }
+
+}
+
+export default function SinglePostPage({ postId }: { postId: string }) {
+
+
+  const { data, isLoading, isError } = api.post.getById.useQuery({ postId })
 
 
 
   return (
     <>
       <Head>
-        <title>{`Kiwi | `}</title>
+        <title>{`${data?.author.username} | ${data?.post.content}`}</title>
         <meta name="description" content="Kiwi - Chirp" />
       </Head>
       <PageLayout>
 
-        <header className="w-full h-[80px] border-b border-b-white/15 py-2 px-4 flex items-center justify-between">
-          <div className="h-full w-full flex items-center gap-2 text-white">
-            <SignedOut>
-              <SignInButton />
-            </SignedOut>
-            <SignedIn>
-              <CreatePostWizard />
-            </SignedIn>
-          </div>
-        </header>
-        {
-          // !!user && <p>{user.user?.fullName} | {user.user?.id}</p>
-        }
         <div className="flex flex-col items-center w-full">
-
-
+          <PostView {...data} />
         </div>
       </PageLayout>
     </>

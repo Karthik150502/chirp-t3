@@ -3,16 +3,11 @@
 import { api } from "@/utils/api";
 import Head from "next/head";
 import { Loader2 } from "lucide-react";
-import { createServerSideHelpers } from '@trpc/react-query/server';
-
-import superjson from 'superjson';
-import { appRouter } from "@/server/api/root";
-import { db } from "@/server/db"
 import type { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from "next";
 import PageLayout from "@/components/layouts/pageLayout";
 import Image from "next/image";
 import ProfilePostsFeed from "@/components/profilePostsFeed";
-import { TRPCError } from "@trpc/server";
+import { generateSsgHelper } from "@/server/helpers/ssgHelper";
 
 export const getStaticPaths: GetStaticPaths = () => {
     return {
@@ -25,14 +20,7 @@ export const getStaticPaths: GetStaticPaths = () => {
 
 export const getStaticProps: GetStaticProps = async (context: GetStaticPropsContext) => {
 
-    const ssgHelper = createServerSideHelpers({
-        router: appRouter,
-        ctx: {
-            db,
-            user: null
-        },
-        transformer: superjson, // optional - adds superjson serialization
-    });
+    const ssgHelper = generateSsgHelper();
 
     const slug = context.params?.slug;
     if (!slug) {
@@ -82,7 +70,7 @@ export default function ProfilePage({ username }: { username: string }) {
                         </div>
                     }
                     {
-                        (isError || (data instanceof TRPCError)) ? <>
+                        isError ? <>
                             <div className="w-full flex py-5">Internal Server Error.</div>
                         </> : <>
                             <div className="w-full h-[250px] border-b border-b-white/15 flex flex-col items-center justify-center relative">

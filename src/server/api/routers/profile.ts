@@ -14,7 +14,7 @@ export const profileRouter = createTRPCRouter({
             username: [input.username]
         })).data.map(filterUserForClient);
         if (!user) {
-            return new TRPCError({
+            throw new TRPCError({
                 code: "INTERNAL_SERVER_ERROR",
                 message: "User not found."
             })
