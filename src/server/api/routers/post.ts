@@ -60,6 +60,20 @@ export const postRouter = createTRPCRouter({
       });
     }),
 
+
+  getPostsByUserid: publicProcedure.input(z.object({
+    userId: z.string()
+  })).query(async ({ ctx, input }) => {
+    const posts = await ctx.db.post.findMany({
+      where: {
+        authorId: input.userId
+      },
+      orderBy: { createdAt: "desc" },
+      take: 100
+    }).then(attachUserDataToPosts);
+    return posts;
+  }),
+
   getAll: publicProcedure.query(async ({ ctx }) => {
     const posts = await ctx.db.post.findMany({
       orderBy: { createdAt: "desc" },
@@ -67,33 +81,29 @@ export const postRouter = createTRPCRouter({
     });
 
     if (!posts.length) return [];
-
-
-    const clerkC = (await clerkClient());
-    const users = (await clerkC.users.getUserList({
-      userId: posts.map((p: Post) => p.authorId),
-      limit: 100
-    })).data.map(filterUserForClient)
-
-    const res = posts.map(p => {
-
-      const author = users.find((u) => u.id === p.authorId)!
-
-      if (!author) {
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Authr for the post not found." })
-      }
-      return {
-        post: p,
-        author: author
-      }
-    })
-
-    console.log("res", res);
-
-    return res ?? []
-
+    return attachUserDataToPosts(posts);
   }),
-
-
-
 });
+
+
+export const attachUserDataToPosts = async (posts: Post[]) => {
+  const clerkC = (await clerkClient());
+
+  const users = (await clerkC.users.getUserList({
+    userId: posts.map((p: Post) => p.authorId),
+    limit: 100
+  })).data.map(filterUserForClient)
+
+  const res = posts.map(p => {
+    const author = users.find((u) => u.id === p.authorId)!
+    if (!author) {
+      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Authr for the post not found." })
+    }
+    return {
+      post: p,
+      author: author
+    }
+  })
+  console.log("res", res);
+  return res ?? []
+}

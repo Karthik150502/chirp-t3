@@ -16,6 +16,7 @@ import { db } from "@/server/db"
 import type { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from "next";
 import PageLayout from "@/components/layouts/pageLayout";
 import Image from "next/image";
+import ProfilePostsFeed from "@/components/profilePostsFeed";
 
 export const getStaticPaths: GetStaticPaths = () => {
     return {
@@ -61,16 +62,17 @@ export const getStaticProps: GetStaticProps = async (context: GetStaticPropsCont
 
 export default function ProfilePage({ username }: { username: string }) {
 
-    const { data, isLoading } = api.profile.getUserByUsername.useQuery({
+
+
+    const { data, isLoading, isError } = api.profile.getUserByUsername.useQuery({
         username: username
     });
 
 
-    useEffect(() => {
-        if (data) {
-            console.log("@data = ", data);
-        }
-    }, [data])
+    if (isError) {
+        return <div className="w-full flex py-5">Internal Server Error.</div>
+    }
+
 
 
     return (
@@ -94,11 +96,11 @@ export default function ProfilePage({ username }: { username: string }) {
                         <div className="w-full h-[50%] flex items-end justify-center py-5">
                             <p className="text-white">
                                 <span className="text-semibold">{data?.name}</span> | <span className="text-xs text-slate-400">@{data?.username}</span>
-                            </p>    
+                            </p>
                         </div>
                         <Image src={data.profilePicture} height={125} width={125} alt={`${data.name}`} className="rounded-full absolute" />
                     </div>
-
+                    <ProfilePostsFeed userId={data.id} />
                     {/* <div className="text-white flex flex-col items-center justify-center gap-y-2 py-10">
                             <p className="text-2xl">404</p>
                             <p className="text-4xl">Page not found.</p>
