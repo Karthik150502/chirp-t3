@@ -8,6 +8,7 @@ import PageLayout from "@/components/layouts/pageLayout";
 import { generateSsgHelper } from "@/server/helpers/ssgHelper";
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from "next";
 import PostView from "@/components/postView";
+import { Loader2 } from "lucide-react";
 
 
 
@@ -48,7 +49,7 @@ export const getStaticProps: GetStaticProps = async (context: GetStaticPropsCont
 export default function SinglePostPage({ postId }: { postId: string }) {
 
 
-  const { data, isLoading, isError } = api.post.getById.useQuery({ postId })
+  const { data, isLoading } = api.post.getById.useQuery({ postId })
 
 
 
@@ -61,7 +62,20 @@ export default function SinglePostPage({ postId }: { postId: string }) {
       <PageLayout>
 
         <div className="flex flex-col items-center w-full">
-          <PostView {...data} />
+          {
+            isLoading ? <>
+              <div className="flex items-center justify-center gap-2">
+                <Loader2 className="animate-spin stroke-white" />
+                <p className="text-xs py-6 text-white">Loading....</p>
+              </div>
+            </> : !data ? <>
+              <div className="flex items-center justify-center gap-2">
+                <p className="text-xs py-6 text-white">Post not found..</p>
+              </div>
+            </> : <>
+              <PostView {...data} />
+            </>
+          }
         </div>
       </PageLayout>
     </>
