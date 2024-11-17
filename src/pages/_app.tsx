@@ -15,6 +15,7 @@ import {
 } from '@clerk/nextjs'
 import { Toaster } from "@/components/ui/sonner";
 import Head from "next/head";
+import PageLayout from "@/components/layouts/pageLayout";
 
 
 
@@ -25,8 +26,10 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <ClerkProvider>
-        <Component {...pageProps} />
-        <Toaster richColors />
+        <PageLayout>
+          <Component {...pageProps} />
+          <Toaster richColors />
+        </PageLayout>
       </ClerkProvider>
     </div>
   );

@@ -7,6 +7,7 @@ import { TRPCError } from "@trpc/server";
 
 import { Ratelimit } from "@upstash/ratelimit"; // for deno: see above
 import { Redis } from "@upstash/redis"; // see below for cloudflare and fastly adapters
+import { filterUserForClient } from "@/server/lib/utils";
 
 
 
@@ -26,14 +27,6 @@ const ratelimit = new Ratelimit({
 });
 
 
-const filterUserForClient = (user: User) => {
-  return {
-    id: user.id,
-    name: user.fullName,
-    username: user.username,
-    profilePicture: user.imageUrl
-  }
-}
 
 
 export const postRouter = createTRPCRouter({
