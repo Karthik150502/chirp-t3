@@ -73,7 +73,6 @@ export const createTRPCContext = (_opts: CreateNextContextOptions) => {
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
   errorFormatter({ shape, error }) {
-
     return {
       ...shape,
       data: {
@@ -133,7 +132,7 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 
 export const userAuthMiddleware = t.middleware(async ({ ctx, next }) => {
   if (!ctx.user) {
-    return new TRPCError({ code: "UNAUTHORIZED" })
+    new TRPCError({ code: "UNAUTHORIZED" })
   }
 
   return await next({
