@@ -8,7 +8,6 @@ import PageLayout from "@/components/layouts/pageLayout";
 import Image from "next/image";
 import ProfilePostsFeed from "@/components/profilePostsFeed";
 import { generateSsgHelper } from "@/server/helpers/ssgHelper";
-
 export const getStaticPaths: GetStaticPaths = () => {
     return {
         paths: [], fallback: "blocking"

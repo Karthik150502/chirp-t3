@@ -28,9 +28,6 @@ export default function Home() {
           </div>
         </header>
 
-        {
-          // !!user && <p>{user.user?.fullName} | {user.user?.id}</p>
-        }
         <div className="flex flex-col items-center w-full">
           {
 
@@ -41,9 +38,6 @@ export default function Home() {
                     return <PostViewSkeleton key={i} />
                   })
                 }
-                {/* <div className="absolute z-10 w-full flex items-center justify-center h-[100px] top-0">
-                    <Loader2Icon className="animate-spin stroke-slate-500" size={40} />
-                  </div> */}
               </div>
             </> : isError ? <>
               <p className="text-xs text-center text-white">Error while loading posts...</p>

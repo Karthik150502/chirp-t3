@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { clerkClient, User } from "@clerk/nextjs/server";
-import { Post } from "@prisma/client";
+import type { Post } from "@prisma/client";
 
 import { createTRPCRouter, publicProcedure, userAuthProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
@@ -61,7 +61,7 @@ export const postRouter = createTRPCRouter({
   }),
 
   create: userAuthProcedure
-    .input(z.object({ content: z.string().emoji().min(1).max(280) }))
+    .input(z.object({ content: z.string().min(1).max(280) }))
     .mutation(async ({ ctx, input }) => {
 
       const authorId = ctx.user!
