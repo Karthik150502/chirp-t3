@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>{`Kiwi | Home`}</title>
+        <title>{`Kiwi - Home`}</title>
         <meta name="description" content="Kiwi - Chirp" />
       </Head>
       <PageLayout>
